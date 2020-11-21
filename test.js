@@ -3,10 +3,10 @@ const {Writer, blocks} = require('./index.js');
 const w = new Writer();
 const branch = blocks.branch();
 branch.push(
-  blocks.say(blocks.string('hi'))
+  blocks.say(blocks.string('entered if statement'))
 );
-const proc = blocks.procedure('test', true);
-w.push(proc);
+const proc = blocks.procedure('main', true);
+w.push(proc, blocks.call('main'));
 proc.push(
   blocks.goto(
     blocks.number(1),
@@ -18,7 +18,7 @@ proc.push(
       blocks.number(1),
     ),
     branch,
-  ),
+  )
 );
 
 console.log(w.export())
