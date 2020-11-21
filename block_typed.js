@@ -105,6 +105,8 @@ module.exports = {
   BlockBranch,
 
   BlockVariableDef,
+  BlockVarDef,
+  BlockListDef,
   BlockAsset,
   BlockProcedure,
 

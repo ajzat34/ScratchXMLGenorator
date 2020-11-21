@@ -1,6 +1,7 @@
 const {Writer, blocks} = require('./index.js');
 
 const w = new Writer();
+w.push(blocks.definelist('list'));
 const branch = blocks.branch();
 branch.push(
   blocks.say(blocks.string('entered if statement'))

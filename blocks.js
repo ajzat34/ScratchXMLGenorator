@@ -334,5 +334,8 @@ const blocks = {
 // but convert the keys to lower case and return wrapper functions
 // for creating new instances
 for (const key of Object.keys(blocks)) {
-  module.exports[key.toLowerCase()] = (...args)=>new blocks[key](...args);
+  const C = blocks[key];
+  module.exports[key.toLowerCase()] = (...args)=>{
+    return new C(...args);
+  };
 }
