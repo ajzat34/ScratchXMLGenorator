@@ -1,5 +1,12 @@
 {
   "dependencies": {
     "xmlbuilder2": "^2.4.0"
-  }
+  },
+  "name": "ScratchXMLGenorator",
+  "version": "1.0.0",
+  "description": "Genorate Sb3Xml Code",
+  "main": "index.js",
+  "repository": "https://github.com/ajzat34/ScratchXMLGenorator.git",
+  "author": "Andrew Johnson <ajzat25@gmail.com>",
+  "license": "MIT"
 }
