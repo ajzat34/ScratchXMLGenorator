@@ -9,9 +9,31 @@ const blocks = require('./blocks');
 class Writer {
   xmlroot = create({ version: '1.0' });
   root = new BlockBase('sb3');
+  #procedures = new typed.BlockProceduresSection();
+  #variables = new typed.BlockVariableDefSection();
+  #assets = new typed.BlockAssetSection();
+  #blocks = new typed.BlockBlocksSection();
 
-  push(...block) {
-    return this.root.push(...block);
+  constructor() {
+    this.root.push(this.#variables);
+    this.root.push(this.#assets);
+    this.root.push(this.#procedures);
+    this.root.push(this.#blocks);
+  }
+
+  #_push(block) {
+    if (block instanceof typed.BlockVariableDef)
+      return this.#variables.push(block);
+    if (block instanceof typed.BlockAsset)
+      return this.#assets.push(block);
+    if (block instanceof typed.BlockProcedure)
+      return this.#procedures.push(block);
+    else
+      return this.#blocks.push(block);
+  }
+
+  push(...blocks) {
+    for (const block of blocks) this.#_push(block);
   }
 
   /**

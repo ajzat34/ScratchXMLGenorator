@@ -3,6 +3,113 @@ const BlockBase = require('./block');
 const txt = BlockBase.text;
 const typed = require('./block_typed');
 
+/*
+exports functions:
+
+// motion
+goto
+gotox
+gotoy
+x
+y
+direction
+setangle
+
+// looks
+say
+think
+setcostume
+costume
+setsize
+show
+hide
+
+// control
+sleep
+repeat
+forever
+if
+ifelse
+sleepuntil
+until
+
+// sensing
+ask
+answer
+keypressed
+mousedown
+mousex
+mousey
+resettimer
+
+// operator
+add
+sub
+mul
+div
+mod
+gt
+lt
+eq
+and
+or
+not
+strjoin
+strindex
+strlength
+strcontains
+random
+op
+
+// data
+set
+incr
+varshow
+varhide
+listpush
+listremove
+listclear
+listinsert
+listreplace
+listindex
+listfindindex
+listcontains
+listshow
+listhide
+listlength
+
+// pen
+clear
+stamp
+pendown
+penup
+setpensize
+setpencolor
+
+// special
+stopall
+stopthis
+
+// other
+number
+string
+symbol
+call
+branch
+procedure
+blockasset
+definevar
+definelist
+
+// other
+// these are for creating blocks that havent been implimented
+stack
+reporter
+boolean
+c
+cap
+*/
+
 function factory(base, opcode, names = []) {
   if (typeof names === 'string') names = [names];
   return class extends base {
@@ -46,7 +153,7 @@ class If extends typed.BlockC {
     typed.assertBloolean(condition);
     typed.assertBranch(branch);
     this.push(txt('condition:'), condition);
-    this.push(txt('branch'), branch);
+    this.push(txt('branch:'), branch);
   }
 }
 
@@ -57,8 +164,8 @@ class IfElse extends typed.BlockC {
     typed.assertBranch(branch);
     typed.assertBranch(branch_else);
     this.push(txt('condition:'), condition);
-    this.push(txt('branch'), branch);
-    this.push(txt('else_branch'), branch_else);
+    this.push(txt('true branch:'), branch);
+    this.push(txt('false branch:'), branch_else);
   }
 }
 
@@ -68,7 +175,7 @@ class Repeat extends typed.BlockC {
     typed.assertReporter(times);
     typed.assertBranch(branch);
     this.push(txt('times:'), times);
-    this.push(txt('branch'), branch);
+    this.push(txt('branch:'), branch);
   }
 }
 
@@ -78,7 +185,7 @@ class Until extends typed.BlockC {
     typed.assertBloolean(condition);
     typed.assertBranch(branch);
     this.push(txt('condition:'), condition);
-    this.push(txt('branch'), branch);
+    this.push(txt('branch:'), branch);
   }
 }
 
@@ -104,7 +211,15 @@ class Call extends typed.BlockStack {
   }
 }
 
+class Op extends typed.BlockReporter {
+  constructor(op) {
+    assert(typeof op === 'string');
+    super('op', {op});
+  }
+}
+
 const blocks = {
+  // motion
   Goto: factory(typed.BlockStack, 'goto', ['x','y']),
   GotoX: factory(typed.BlockStack,'gotox', ['x']),
   GotoY: factory(typed.BlockStack,'gotoy', ['y']),
@@ -113,6 +228,7 @@ const blocks = {
   Direction: factory(typed.BlockReporter, 'direction'),
   SetAngle: factory(typed.BlockStack, 'set-angle', 'value'),
 
+  // looks
   Say: factory(typed.BlockStack, 'say', 'text'),
   Think: factory(typed.BlockStack, 'think', 'text'),
   SetCostume: factory(typed.BlockStack, 'set-costume', 'costume'),
@@ -160,7 +276,7 @@ const blocks = {
   StrContains: factory(typed.BlockBoolean, 'str-contains', 'string'),
 
   Random: factory(typed.BlockReporter, 'random', ['low', 'high']),
-  // op: 'operator.mathop',
+  op: Op,
 
   // data
   Set: factory(typed.BlockStack, 'set', ['variable','value']),
@@ -196,9 +312,27 @@ const blocks = {
   String: StringBlock,
   Symbol: Symbol,
   Call: Call,
+
   Branch: typed.BlockBranch,
+
+  Procedure: typed.BlockProcedure,
+
+  BlockAsset: typed.BlockAsset,
+
+  DefineVar: typed.BlockVarDef,
+  DefineList: typed.BlockListDef,
+
+  Stack: typed.BlockStack,
+  Reporter: typed.BlockReporter,
+  Boolean: typed.BlockBoolean,
+  C: typed.BlockC,
+  Cap: typed.BlockCap,
 }
 
+
+// define module.exports to reflect the list of classes above
+// but convert the keys to lower case and return wrapper functions
+// for creating new instances
 for (const key of Object.keys(blocks)) {
   module.exports[key.toLowerCase()] = (...args)=>new blocks[key](...args);
 }

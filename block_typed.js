@@ -2,6 +2,7 @@ const assert = require('assert');
 
 const BlockBase = require('./block');
 
+// ----- Basic Scratch Block Types
 class BlockHat extends BlockBase {};
 class BlockStack extends BlockBase {};
 class BlockReporter extends BlockBase {};
@@ -12,44 +13,85 @@ class BlockCap extends BlockStack {
   cap = true;
 };
 
-class BlockBranch extends BlockBase {
+// ----- Helper for branches
+class _BlockBranch extends BlockBase {
+  #_push(block) {
+    assert(block instanceof BlockStack, `Block: ${block.opcode} is not direived from BlockStack`);
+    return super.push(block);
+  }
+  push(...blocks) {
+    for (const block of blocks) {
+      this.#_push(block);
+    }
+  }
+}
+
+// ----- Basic Branch
+class BlockBranch extends _BlockBranch {
   constructor(){super('branch')}
-  push(block) {
-    assert(block instanceof BlockStack);
-    return super.push(block);
-  }
 };
 
+// ----- <variables> section
 class BlockVariableDef extends BlockBase {};
-class BlockAsset extends BlockBase {};
-class BlockProcedure extends BlockBase {
+  // <var symbol="symbol"/> in <variables> section
+  class BlockVarDef extends BlockVariableDef {
+    constructor(symbol) {
+      assert(typeof symbol === 'string');
+      super('var', {symbol});
+    }
+  };
+  // <list symbol="symbol"/> in <variables> section
+  class BlockListDef extends BlockVariableDef {
+    constructor(symbol) {
+      assert(typeof symbol === 'string');
+      super('list', {symbol});
+    }
+  };
+
+class BlockVariableDefSection extends BlockBase {
+  constructor(){super('variables')}
   push(block) {
-    assert(block instanceof BlockStack);
+    assert(block instanceof BlockVariableDef);
     return super.push(block);
   }
 };
 
-class BlockSection extends BlockBase {};
-  class BlockVariableDefSection extends BlockSection {
-    push(block) {
-      assert(block instanceof BlockVariableDef);
-      return super.push(block);
-    }
-  };
+  // ----- <assets> section
+class BlockAsset extends BlockBase {
+  constructor(symbol) {
+    assert(typeof symbol === 'string');
+    super('asset', {symbol});
+  }
+};
 
-  class BlockAssetSection extends BlockSection {
-    push(block) {
-      assert(block instanceof BlockAsset);
-      return super.push(block);
-    }
-  };
+// ----- <procedures> section
+class BlockProcedure extends _BlockBranch {
+  constructor(symbol, warp = false) {
+    assert(typeof symbol === 'string');
+    super('proc', {symbol, warp});
+  }
+};
 
-  class BlockProceduresSection extends BlockSection {
-    push(block) {
-      assert(block instanceof BlockProcedure);
-      return super.push(block);
-    }
-  };
+class BlockProceduresSection extends BlockBase {
+  constructor(){super('procedures')}
+  push(block) {
+    assert(block instanceof BlockProcedure);
+    return super.push(block);
+  }
+};
+
+class BlockAssetSection extends BlockBase {
+  constructor(){super('assets')}
+  push(block) {
+    assert(block instanceof BlockAsset);
+    return super.push(block);
+  }
+};
+
+// ------ <blocks section>
+class BlockBlocksSection extends _BlockBranch {
+  constructor(){super('blocks')}
+};
 
 module.exports = {
   BlockLiteral,
@@ -69,6 +111,7 @@ module.exports = {
   BlockVariableDefSection,
   BlockAssetSection,
   BlockProceduresSection,
+  BlockBlocksSection,
 
   assertReporter(block) {
     assert(typeof block === 'object', `${block} is not an object`);
