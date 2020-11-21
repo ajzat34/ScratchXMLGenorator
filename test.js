@@ -19,6 +19,6 @@ proc.push(
     ),
     branch,
   ),
-)
+);
 
 console.log(w.export())
