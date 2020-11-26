@@ -7,7 +7,6 @@ const typed = require('./block_typed');
 const blocks = require('./blocks');
 
 class Writer {
-  xmlroot = create({ version: '1.0' });
   root = new BlockBase('sb3');
   #procedures = new typed.BlockProceduresSection();
   #variables = new typed.BlockVariableDefSection();
@@ -40,8 +39,9 @@ class Writer {
   * @return {string}
   */
   export() {
-    this.root.build(this.xmlroot);
-    return this.xmlroot.end({ prettyPrint: true });
+    const root = create({ version: '1.0' });
+    this.root.build(root);
+    return root.end({ prettyPrint: true });
   }
 }
 
