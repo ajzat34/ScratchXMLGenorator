@@ -16,7 +16,7 @@ class BlockCap extends BlockStack {
 // ----- Helper for branches
 class _BlockBranch extends BlockBase {
   #_push(block) {
-    assert(block instanceof BlockStack, `Block: ${block.opcode} is not direived from BlockStack`);
+    assert(block instanceof BlockStack, `Block: ${block.opcode} is not stackable`);
     return super.push(block);
   }
   push(...blocks) {
