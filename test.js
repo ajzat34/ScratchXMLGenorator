@@ -19,7 +19,8 @@ proc.push(
       blocks.number(1),
     ),
     branch,
-  )
+  ),
+  blocks.repeat(blocks.number(100), branch)
 );
 
 console.log(w.export())
